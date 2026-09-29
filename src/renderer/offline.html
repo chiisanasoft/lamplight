@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
+<title>Lamplight</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="offline.css">
+</head>
+<body>
+<main>
+  <svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1.2 3.1 4.8 5.2 4.8 9.6A4.8 4.8 0 0 1 7.2 12c0-1.9.9-3.3 1.8-4.3.2 1.6 1 2.6 2 2.9C10.4 7.6 11 4.4 12 2Z"/></svg>
+  <h1>サーバーに接続できません</h1>
+  <p>接続先 <code id="url"></code> が応答しません。接続先のサーバー（Docker のコンテナなど）が起動しているか確認してください。</p>
+  <pre>docker compose up -d</pre>
+  <p class="reason" id="reason"></p>
+  <div class="actions">
+    <button class="primary" id="retry">再接続</button>
+    <button id="settings">接続先を変更…</button>
+  </div>
+</main>
+<script type="module" src="offline.js"></script>
+</body>
+</html>

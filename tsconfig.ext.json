@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.main.json",
+  "compilerOptions": {
+    "rootDir": "extensions/ocr/src",
+    "outDir": "extensions/ocr/dist",
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["extensions/ocr/src/**/*.ts"]
+}

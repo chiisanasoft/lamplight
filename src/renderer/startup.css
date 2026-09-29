@@ -1,0 +1,18 @@
+main { max-width: 520px; margin: 0 auto; padding: 16vh 24px 40px; display: flex; flex-direction: column; gap: 18px; }
+.mark { width: 56px; height: 56px; }
+h1 { font-size: 21px; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.note { font-size: 12.5px; color: var(--muted); }
+a { color: var(--accent); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.err { color: var(--danger); font-size: 13px; }
+ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--muted); }
+li { display: flex; align-items: center; gap: 10px; }
+li::before { content: "○"; width: 1em; text-align: center; }
+li.active { color: var(--ink); }
+li.active::before { content: "◐"; color: var(--accent); animation: spin 1.2s linear infinite; }
+li.done::before { content: "●"; color: var(--accent); }
+progress { flex: 1; accent-color: var(--accent); height: 6px; }
+section { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { li.active::before { animation: none; } }

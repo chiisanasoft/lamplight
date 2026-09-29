@@ -1,0 +1,46 @@
+diff --git a/config/lamplight-recover-account.js b/config/lamplight-recover-account.js
+new file mode 100644
+index 00000000..16f9b1fb
+--- /dev/null
++++ b/config/lamplight-recover-account.js
+@@ -0,0 +1,40 @@
++/**
++ * Lamplight: resets the local account after the app's secrets were regenerated (for example when
++ * the OS keychain entry that protected them was removed). Non-interactive counterpart of
++ * reset-password.js; it also removes the user's saved credentials, which were encrypted with the
++ * previous CREDS_KEY and can no longer be read.
++ *
++ * Usage: node config/lamplight-recover-account.js <email> <password>
++ * Exit codes: 0 recovered, 3 no such user, 1 error.
++ */
++const path = require('path');
++const bcrypt = require('bcryptjs');
++const mongoose = require('mongoose');
++const { User, Key, PluginAuth } = require('@librechat/data-schemas').createModels(mongoose);
++require('module-alias')({ base: path.resolve(__dirname, '..', 'api') });
++const connect = require('./connect');
++
++(async () => {
++  const [email, password] = process.argv.slice(2);
++  if (!email || !password || password.length < 8) {
++    console.error('Usage: lamplight-recover-account.js <email> <password (8+ chars)>');
++    process.exit(1);
++  }
++  await connect();
++  const user = await User.findOne({ email });
++  if (!user) {
++    console.error('User not found');
++    process.exit(3);
++  }
++  const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
++  await User.updateOne({ _id: user._id }, { password: hashedPassword, passwordVersion: Date.now() });
++  const keys = await Key.deleteMany({ userId: user._id });
++  const pluginAuths = await PluginAuth.deleteMany({ userId: user._id.toString() });
++  console.log(
++    `Recovered ${email}: removed ${keys.deletedCount} saved API keys and ${pluginAuths.deletedCount} plugin credentials`,
++  );
++  process.exit(0);
++})().catch((err) => {
++  console.error('Error recovering the account:', err);
++  process.exit(1);
++});

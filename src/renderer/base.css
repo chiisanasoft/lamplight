@@ -1,0 +1,58 @@
+[hidden] { display: none !important; }
+:root {
+  --bg: #fbf7f1;
+  --surface: #ffffff;
+  --ink: #2a241e;
+  --muted: #7a6e60;
+  --line: #e5dccf;
+  --accent: #c9780f;
+  --accent-ink: #ffffff;
+  --glow: rgba(242, 163, 58, 0.18);
+  --danger: #b3261e;
+  --ok: #2f7d32;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d1a17;
+    --surface: #27231f;
+    --ink: #f3ebe0;
+    --muted: #a89c8c;
+    --line: #3a342d;
+    --accent: #f2a33a;
+    --accent-ink: #1d1a17;
+    --glow: rgba(242, 163, 58, 0.14);
+    --danger: #ff8a80;
+    --ok: #81c784;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+input[type="text"], input[type="url"], select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+input[type="checkbox"] { accent-color: var(--accent); }

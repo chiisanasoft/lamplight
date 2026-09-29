@@ -1,0 +1,29 @@
+{
+  "id": "ocr",
+  "name": "OCR（PDF の読み取り）",
+  "version": "0.2.0",
+  "description": "PDF をローカル LLM で扱えるようにします。「テキストとしてアップロード」でスキャンした PDF も glm-ocr で読み取ります。表を Excel で出力し、OCR→整形（ocr-format）で指定した列に整えます。",
+  "lamplightApi": 1,
+  "type": "ollama-proxy",
+  "main": "dist/server.js",
+  "platforms": ["darwin-arm64", "darwin-x64", "linux-x64", "linux-arm64"],
+  "downloadPaths": ["/exports/"],
+  "ocrService": { "basePath": "/v1", "model": "glm-ocr" },
+  "requires": { "ollamaModels": ["glm-ocr"] },
+  "settings": [
+    {
+      "key": "formatLlm",
+      "label": "OCR→整形（ocr-format）に使うモデル",
+      "type": "ollama-model",
+      "default": "",
+      "description": "選ぶと、モデル一覧に ocr-format が表示されます。JSON の構造化出力に対応したモデルを選んでください。"
+    },
+    {
+      "key": "template",
+      "label": "整形後の列（カンマ区切り）",
+      "type": "text",
+      "default": "日付,姓,名,郵便番号,住所,電話番号,備考"
+    }
+  ],
+  "license": "MIT（同梱の依存: pdf.js Apache-2.0、@napi-rs/canvas・exceljs・htmlparser2 MIT）"
+}

@@ -1,0 +1,9 @@
+main { max-width: 520px; margin: 0 auto; padding: 18vh 24px 40px; display: flex; flex-direction: column; gap: 14px; }
+.flame { width: 40px; height: 40px; fill: var(--muted); }
+h1 { font-size: 22px; margin: 0; }
+p { margin: 0; color: var(--muted); }
+code, pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; }
+code { color: var(--ink); }
+pre { margin: 0; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
+.reason { font-size: 12px; }
+.actions { display: flex; gap: 10px; }

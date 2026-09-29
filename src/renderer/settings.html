@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
+<title>Lamplight の設定</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="settings.css">
+</head>
+<body>
+<form id="form">
+  <section>
+    <h2>サーバー</h2>
+    <label class="check"><input type="radio" name="serverMode" value="embedded"> 内蔵サーバー（このコンピューターの中で Lamplight のサーバーを動かす）</label>
+    <label class="check"><input type="radio" name="serverMode" value="external"> 外部サーバー（Docker やほかのマシンの LibreChat に接続する）</label>
+    <div id="externalFields">
+      <label for="serverUrl">サーバーの URL</label>
+      <div class="inline">
+        <input type="url" id="serverUrl" placeholder="http://localhost:3080">
+        <button type="button" id="test">接続テスト</button>
+      </div>
+      <p class="note" id="testResult" role="status"></p>
+    </div>
+    <div id="embeddedFields" class="inline">
+      <button type="button" data-open="serverEnv">server.env を開く</button>
+      <button type="button" data-open="librechatYaml">librechat.yaml を開く</button>
+      <button type="button" data-open="dataDir">データフォルダ</button>
+    </div>
+    <p class="note" id="embeddedNote">内蔵サーバーの設定は、LibreChat の <code>.env</code>・<code>librechat.yaml</code> と同じ書き方で変更できます（再起動後に反映）。OpenAI・Claude・Gemini の API キーは、チャット画面のモデル選択にある歯車アイコンからも入力できます。</p>
+    <p class="note" id="restartNote" hidden>サーバーの切り替えは Lamplight の再起動後に反映されます。 <button type="button" id="relaunch">今すぐ再起動</button></p>
+  </section>
+
+  <section id="extSection">
+    <h2>拡張機能</h2>
+    <p class="note">必要な機能を拡張機能として追加できます（<code>.lamplightext</code> ファイル）。拡張機能はこのコンピューターの上で、あなたの権限でプログラムを実行します。信頼できる配布元のものだけを追加してください。</p>
+    <p class="note err" id="extExternal" hidden>外部サーバーに接続しているあいだは、拡張機能は使えません（内蔵サーバーで動きます）。</p>
+    <div id="extList"></div>
+    <div class="inline">
+      <button type="button" id="extFile">ファイルから追加…</button>
+    </div>
+    <p class="note" id="extStatus" role="status"></p>
+    <p class="note" id="extRestart" hidden>変更はサーバーの再起動後に反映されます。 <button type="button" id="extRestartBtn">今すぐ再起動</button></p>
+  </section>
+
+  <section>
+    <h2>クイック入力</h2>
+    <label for="shortcut">呼び出すショートカット</label>
+    <input type="text" id="shortcut" placeholder="Alt+Space">
+    <p class="note">例: <code>Alt+Space</code>、<code>CommandOrControl+Shift+Space</code>。Mac では Alt が ⌥ キーです。</p>
+  </section>
+
+  <section>
+    <h2>お気に入りモデル</h2>
+    <p class="note">クイック入力とメニューバーから選べるモデルです。エンドポイント名はモデル一覧の見出し（例: <code>Ollama</code>、<code>openAI</code>、<code>anthropic</code>）と同じにします。</p>
+    <div class="fav-head" aria-hidden="true"><span>表示名</span><span>エンドポイント</span><span>モデル</span><span></span></div>
+    <div id="favorites"></div>
+    <div class="inline">
+      <button type="button" id="addFavorite">行を追加</button>
+      <select id="ollama" aria-label="Ollama のモデルから追加"><option value="">Ollama のモデルから追加…</option></select>
+    </div>
+  </section>
+
+  <section>
+    <h2>動作</h2>
+    <label class="check"><input type="checkbox" id="notifyOnComplete"> ウィンドウが裏にあるとき、応答の完了を通知する</label>
+    <label class="check"><input type="checkbox" id="keepRunningInTray"> ウィンドウを閉じてもメニューバー（トレイ）に常駐する</label>
+    <label class="check"><input type="checkbox" id="launchAtLogin"> ログイン時に起動する</label>
+    <label class="check"><input type="checkbox" id="checkForUpdates"> 起動時にアップデートを確認し、自動でダウンロードする</label>
+  </section>
+
+  <footer>
+    <p class="note" id="saveResult" role="status"></p>
+    <button type="submit" class="primary">保存</button>
+  </footer>
+</form>
+<template id="favoriteRow">
+  <div class="fav">
+    <input type="text" data-k="label" aria-label="表示名" placeholder="Qwen 3.5">
+    <input type="text" data-k="endpoint" aria-label="エンドポイント" placeholder="Ollama">
+    <input type="text" data-k="model" aria-label="モデル" placeholder="qwen3.5:9b">
+    <button type="button" class="remove" aria-label="削除">✕</button>
+  </div>
+</template>
+<script type="module" src="settings.js"></script>
+</body>
+</html>

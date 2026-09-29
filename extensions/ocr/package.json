@@ -1,0 +1,13 @@
+{
+  "name": "lamplight-extension-ocr",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Lamplight extension: PDF OCR, tables to Excel and the ocr-format workflow",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.9",
+    "exceljs": "^4.4.0",
+    "htmlparser2": "^12.0.0",
+    "pdfjs-dist": "^6.3.289"
+  }
+}

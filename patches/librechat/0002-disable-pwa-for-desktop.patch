@@ -1,0 +1,10 @@
+diff --git a/client/vite.config.ts b/client/vite.config.ts
+index 5a279a9..423c06e 100644
+--- a/client/vite.config.ts
++++ b/client/vite.config.ts
+@@ -93,2 +93,5 @@ export default defineConfig(({ command }) => ({
+     VitePWA({
++      // Lamplight: a desktop build has no use for a service worker, and its cache would
++      // keep serving the previous UI after an app update
++      disable: process.env.LAMPLIGHT_DISABLE_PWA === 'true',
+       injectRegister: 'auto', // 'auto' | 'manual' | 'disabled'

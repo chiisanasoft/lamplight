@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
+<title>Lamplight クイック入力</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="quick-entry.css">
+</head>
+<body>
+<form id="form" class="panel">
+  <div class="row">
+    <svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1.2 3.1 4.8 5.2 4.8 9.6A4.8 4.8 0 0 1 7.2 12c0-1.9.9-3.3 1.8-4.3.2 1.6 1 2.6 2 2.9C10.4 7.6 11 4.4 12 2Z"/></svg>
+    <textarea id="prompt" rows="2" placeholder="Lamplight に質問…" aria-label="質問"></textarea>
+  </div>
+  <div class="bar">
+    <select id="model" aria-label="モデル"></select>
+    <span class="hint"><kbd>↵</kbd> 送信 · <kbd>⇧↵</kbd> 改行 · <kbd>esc</kbd> 閉じる</span>
+  </div>
+</form>
+<script type="module" src="quick-entry.js"></script>
+</body>
+</html>

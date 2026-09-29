@@ -1,0 +1,45 @@
+{
+  "name": "lamplight",
+  "productName": "Lamplight",
+  "version": "0.6.1",
+  "description": "Desktop client for self-hosted LibreChat — quick entry, menu bar and notifications",
+  "license": "MIT",
+  "author": "chiisanasoft",
+  "homepage": "https://github.com/chiisanasoft/lamplight",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chiisanasoft/lamplight.git"
+  },
+  "private": true,
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.main.json && tsc -p tsconfig.renderer.json && node scripts/copy-static.mjs",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.renderer.json --noEmit && tsc -p tsconfig.ext.json --noEmit",
+    "dist:mac": "npm run build && electron-builder --mac --publish never",
+    "dist:linux": "npm run build && electron-builder --linux --publish never",
+    "build:server": "node scripts/build-server.mjs",
+    "build:ext": "node scripts/build-extension.mjs extensions/ocr",
+    "release:mac": "node scripts/release-app.mjs --mac",
+    "release:ext": "node scripts/release-extension.mjs",
+    "build:server:linux": "node scripts/stage-server-linux.mjs",
+    "release:linux": "node scripts/release-app.mjs --linux --x64",
+    "notices": "node scripts/third-party-notices.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  },
+  "lamplight": {
+    "librechatVersion": "v0.8.7",
+    "mongodbVersion": "8.0.20"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  },
+  "desktopName": "lamplight.desktop"
+}

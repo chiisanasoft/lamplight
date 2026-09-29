@@ -1,0 +1,224 @@
+diff --git a/client/src/components/Nav/AccountSettings.tsx b/client/src/components/Nav/AccountSettings.tsx
+index d5c37652..27e01315 100644
+--- a/client/src/components/Nav/AccountSettings.tsx
++++ b/client/src/components/Nav/AccountSettings.tsx
+@@ -1,3 +1,3 @@
+-import { useState, memo, useRef } from 'react';
++import { useState, memo, useRef, useCallback } from 'react';
+ import { useSetRecoilState } from 'recoil';
+ import * as Menu from '@ariakit/react/menu';
+@@ -18,4 +18,5 @@ import { MyFilesModal } from '~/components/Chat/Input/Files/MyFilesModal';
+ import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
+ import { useAuthContext } from '~/hooks/AuthContext';
++import { isLamplightDesktop, useLamplightOpenSettings } from './Settings/Lamplight';
+ import { useLocalize } from '~/hooks';
+ import Settings from './Settings';
+@@ -105,4 +106,5 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
+   const [showArchived, setShowArchived] = useState(false);
+   const accountSettingsButtonRef = useRef<HTMLButtonElement>(null);
++  useLamplightOpenSettings(useCallback(() => setShowSettings(true), []));
+ 
+   return (
+@@ -143,5 +145,5 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
+       >
+         <div className="text-token-text-secondary ml-3 mr-2 py-2 text-sm" role="note">
+-          {user?.email ?? localize('com_nav_user')}
++          {(isLamplightDesktop ? user?.name : user?.email) ?? localize('com_nav_user')}
+         </div>
+         <DropdownMenuSeparator />
+@@ -177,9 +179,14 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
+           {localize('com_nav_settings')}
+         </Menu.MenuItem>
+-        <DropdownMenuSeparator />
+-        <Menu.MenuItem onClick={() => logout()} className="select-item text-sm">
+-          <LogOut className="icon-md" aria-hidden="true" />
+-          {localize('com_nav_log_out')}
+-        </Menu.MenuItem>
++        {/* Lamplight: the desktop app signs its single local account in by itself */}
++        {!isLamplightDesktop && (
++          <>
++            <DropdownMenuSeparator />
++            <Menu.MenuItem onClick={() => logout()} className="select-item text-sm">
++              <LogOut className="icon-md" aria-hidden="true" />
++              {localize('com_nav_log_out')}
++            </Menu.MenuItem>
++          </>
++        )}
+       </Menu.Menu>
+       {showFiles && (
+diff --git a/client/src/components/Nav/Settings/Content.tsx b/client/src/components/Nav/Settings/Content.tsx
+index dd8bc2c7..e6dbf587 100644
+--- a/client/src/components/Nav/Settings/Content.tsx
++++ b/client/src/components/Nav/Settings/Content.tsx
+@@ -1,4 +1,5 @@
+ import { useMemo } from 'react';
+ import type { SettingsContextValue, SettingsTab, SettingEntry } from './types';
++import { isLamplightTab, LamplightPanel } from './Lamplight';
+ import { filterSettings } from './search';
+ import { useLocalize } from '~/hooks';
+@@ -55,4 +56,8 @@ export default function Content({ activeTab, query, ctx }: ContentProps) {
+   }
+ 
++  if (isLamplightTab(activeTab)) {
++    return <LamplightPanel tab={activeTab} />;
++  }
++
+   return (
+     <div>
+diff --git a/client/src/components/Nav/Settings/Dialog.tsx b/client/src/components/Nav/Settings/Dialog.tsx
+index fa2f2dd4..1f0942bd 100644
+--- a/client/src/components/Nav/Settings/Dialog.tsx
++++ b/client/src/components/Nav/Settings/Dialog.tsx
+@@ -8,4 +8,5 @@ import type { TDialogProps } from '~/common';
+ import type { SettingsTab } from './types';
+ import { useSettingsContext } from './context';
++import { takeRequestedTab } from './Lamplight';
+ import { useLocalize } from '~/hooks';
+ import Sidebar from './Sidebar';
+@@ -18,5 +19,7 @@ export default function SettingsDialog({ open, onOpenChange }: TDialogProps) {
+   const ctx = useSettingsContext();
+   const isSmallScreen = useMediaQuery('(max-width: 767px)');
+-  const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTabValues.GENERAL);
++  const [activeTab, setActiveTab] = useState<SettingsTab>(
++    () => takeRequestedTab() ?? SettingsTabValues.GENERAL,
++  );
+   const [query, setQuery] = useState('');
+   const [mobileDetail, setMobileDetail] = useState(false);
+diff --git a/client/src/components/Nav/Settings/Lamplight.tsx b/client/src/components/Nav/Settings/Lamplight.tsx
+new file mode 100644
+index 00000000..35298c5a
+--- /dev/null
++++ b/client/src/components/Nav/Settings/Lamplight.tsx
+@@ -0,0 +1,86 @@
++/**
++ * Lamplight: settings of the desktop app shown as tabs of this dialog, so the app has one place for
++ * settings. The tabs embed Lamplight's own settings page (lamplight://app/settings.html), which talks
++ * to the app through its preload; this page itself gets no access to the app beyond the flag below.
++ */
++import { createElement, useEffect } from 'react';
++import { Monitor, Puzzle } from 'lucide-react';
++import type { TabMeta } from './types';
++
++declare global {
++  interface Window {
++    /** Set by the Lamplight desktop app's preload in its main window */
++    lamplightDesktop?: { desktop: boolean };
++    /** Tells the app that this build can open its settings as tabs */
++    __lamplightSettings?: boolean;
++  }
++}
++
++export const LAMPLIGHT_DESKTOP_TAB = 'lamplight-desktop';
++export const LAMPLIGHT_EXTENSIONS_TAB = 'lamplight-extensions';
++export type LamplightTab = typeof LAMPLIGHT_DESKTOP_TAB | typeof LAMPLIGHT_EXTENSIONS_TAB;
++
++export const isLamplightDesktop =
++  typeof window !== 'undefined' && window.lamplightDesktop?.desktop === true;
++
++export const isLamplightTab = (tab: string): tab is LamplightTab =>
++  tab === LAMPLIGHT_DESKTOP_TAB || tab === LAMPLIGHT_EXTENSIONS_TAB;
++
++export const LAMPLIGHT_TABS: TabMeta[] = [
++  {
++    id: LAMPLIGHT_DESKTOP_TAB,
++    labelKey: 'com_nav_setting_desktop',
++    icon: createElement(Monitor, { className: 'icon-sm', 'aria-hidden': true }),
++    sections: [],
++    show: () => isLamplightDesktop,
++  },
++  {
++    id: LAMPLIGHT_EXTENSIONS_TAB,
++    labelKey: 'com_nav_setting_extensions',
++    icon: createElement(Puzzle, { className: 'icon-sm', 'aria-hidden': true }),
++    sections: [],
++    show: () => isLamplightDesktop,
++  },
++];
++
++let requestedTab: LamplightTab | null = null;
++
++/** The tab the app asked for when it opened the dialog (menu bar "設定…" / "拡張機能…"). */
++export function takeRequestedTab(): LamplightTab | null {
++  const tab = requestedTab;
++  requestedTab = null;
++  return tab;
++}
++
++/** Opens the dialog when the app dispatches `lamplight:open-settings` (detail: the tab). */
++export function useLamplightOpenSettings(open: () => void) {
++  useEffect(() => {
++    if (!isLamplightDesktop) {
++      return;
++    }
++    const onOpen = (event: Event) => {
++      const tab = (event as CustomEvent<string>).detail;
++      requestedTab = isLamplightTab(tab) ? tab : LAMPLIGHT_DESKTOP_TAB;
++      open();
++    };
++    window.__lamplightSettings = true;
++    window.addEventListener('lamplight:open-settings', onOpen);
++    return () => {
++      window.__lamplightSettings = false;
++      window.removeEventListener('lamplight:open-settings', onOpen);
++    };
++  }, [open]);
++}
++
++export function LamplightPanel({ tab }: { tab: LamplightTab }) {
++  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
++  const view = tab === LAMPLIGHT_EXTENSIONS_TAB ? 'extensions' : 'desktop';
++  return (
++    <iframe
++      key={`${view}-${theme}`}
++      title={view}
++      src={`lamplight://app/settings.html?embed=1&view=${view}&theme=${theme}`}
++      className="block h-[calc(85vh-9.5rem)] w-full border-0 bg-transparent"
++    />
++  );
++}
+diff --git a/client/src/components/Nav/Settings/types.ts b/client/src/components/Nav/Settings/types.ts
+index 05a87c9c..35b62819 100644
+--- a/client/src/components/Nav/Settings/types.ts
++++ b/client/src/components/Nav/Settings/types.ts
+@@ -5,4 +5,6 @@ import { GearIcon, DataIcon, UserIcon, SpeechIcon } from '@librechat/client';
+ import type { ComponentType, ReactNode } from 'react';
+ import type { TranslationKeys } from '~/hooks';
++import type { LamplightTab } from './Lamplight';
++import { LAMPLIGHT_TABS } from './Lamplight';
+ 
+ export type SettingsTab =
+@@ -12,5 +14,6 @@ export type SettingsTab =
+   | SettingsTabValues.DATA
+   | SettingsTabValues.ACCOUNT
+-  | SettingsTabValues.ABOUT;
++  | SettingsTabValues.ABOUT
++  | LamplightTab;
+ 
+ export type SectionId =
+@@ -134,3 +137,4 @@ export const TABS: TabMeta[] = [
+     show: (ctx) => ctx.aboutEnabled,
+   },
++  ...LAMPLIGHT_TABS,
+ ];
+diff --git a/client/src/locales/en/translation.json b/client/src/locales/en/translation.json
+index 81df3891..42b0a1ac 100644
+--- a/client/src/locales/en/translation.json
++++ b/client/src/locales/en/translation.json
+@@ -595,4 +595,6 @@
+   "com_nav_send_message": "Send message",
+   "com_nav_setting_about": "About",
++  "com_nav_setting_desktop": "Desktop",
++  "com_nav_setting_extensions": "Extensions",
+   "com_nav_setting_account": "Account",
+   "com_nav_setting_chat": "Chat",
+diff --git a/client/src/locales/ja/translation.json b/client/src/locales/ja/translation.json
+index 51ce9361..8a0a2256 100644
+--- a/client/src/locales/ja/translation.json
++++ b/client/src/locales/ja/translation.json
+@@ -566,4 +566,6 @@
+   "com_nav_send_message": "メッセージを送信する",
+   "com_nav_setting_account": "アカウント",
++  "com_nav_setting_desktop": "デスクトップ",
++  "com_nav_setting_extensions": "拡張機能",
+   "com_nav_setting_chat": "チャット",
+   "com_nav_setting_delay": "遅延（秒）",

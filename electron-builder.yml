@@ -1,0 +1,48 @@
+appId: io.github.chiisanasoft.lamplight
+productName: Lamplight
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**
+  - build/tray*.png
+  - build/icon.png
+  - build/logo.svg
+  - package.json
+# The embedded LibreChat server is copied in by this hook (see the script for why)
+afterPack: scripts/after-pack.cjs
+extraResources:
+  - from: LICENSE
+    to: LICENSE-Lamplight.txt
+  - THIRD_PARTY_NOTICES.md
+# Releases of this repository also serve the update feed read by electron-updater
+publish:
+  provider: github
+  owner: chiisanasoft
+  repo: lamplight
+  releaseType: release
+mac:
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+      arch: [arm64]
+    # electron-updater installs updates from the zip
+    - target: zip
+      arch: [arm64]
+  icon: build/icon.icns
+  # Signing uses a "Developer ID Application" certificate when the keychain has one; notarization
+  # runs when APPLE_KEYCHAIN_PROFILE (or APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID) is set.
+  # See docs/RELEASE.md.
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    LSUIElement: false
+linux:
+  category: Network
+  # Links running windows to the .desktop entry (app_id / WM_CLASS)
+  syncDesktopName: true
+  target: [AppImage, deb]
+  icon: build/icon.png
+  maintainer: chiisanasoft
+  synopsis: Desktop client for self-hosted LibreChat
