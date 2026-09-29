@@ -4,7 +4,7 @@
 
 | 配布物 | タグ | 用途 |
 | --- | --- | --- |
-| アプリケーション本体（macOS の `.dmg`、Linux の AppImage・`.deb`、自動アップデート用の `.zip`・`latest-mac.yml`・`latest-linux.yml`） | `v<バージョン>` | ダウンロード、自動アップデート（electron-updater） |
+| アプリケーション本体（macOS の `.dmg`、自動アップデート用の `.zip`・`latest-mac.yml`） | `v<バージョン>` | ダウンロード、自動アップデート（electron-updater） |
 | 開発元の拡張機能（`.lamplightext`、署名付き） | `ext-<id>-v<バージョン>` | ダウンロード後、設定画面の「拡張機能」タブにある「ファイルから追加…」でインストール |
 
 > リポジトリが非公開の間は、アプリケーションの自動アップデートは失敗します（HTTP 404）。
@@ -16,11 +16,9 @@ npm version <バージョン> --no-git-tag-version
 npm run build:server                   # LibreChat の更新時のみ
 npm run notices                        # 依存の変更時。THIRD_PARTY_NOTICES.md を更新してコミット
 GH_TOKEN=$(gh auth token) npm run release:mac
-npm run build:server:linux -- x64      # build:server の実行後（Docker が必要）
-GH_TOKEN=$(gh auth token) npm run release:linux
 ```
 
-`release:mac` は `.dmg` と `.zip`、`release:linux` は AppImage と `.deb` を作成し、同じ `v<バージョン>` の Release にアップロードします（更新情報 `latest-mac.yml`・`latest-linux.yml` を含む）。electron-builder の並列アップロードによる Release の重複作成エラーを避けるため、Release は事前に作成します（`scripts/release-app.mjs`）。`dist:mac`・`dist:linux` はアップロードを行いません（ローカルでの確認用）。
+`release:mac` は `.dmg` と `.zip` を作成し、`v<バージョン>` の Release にアップロードします（更新情報 `latest-mac.yml` を含む）。配布対象は動作確認済みの macOS のみです。Linux 版はビルド可能ですが（`dist:linux`）、実機での動作確認が完了していないため配布しません。electron-builder の並列アップロードによる Release の重複作成エラーを避けるため、Release は事前に作成します（`scripts/release-app.mjs`）。`dist:mac` はアップロードを行いません（ローカルでの確認用）。
 
 macOS の署名は全ファイルにタイムスタンプを付与するため、10〜40 分程度を要します。
 

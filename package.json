@@ -24,7 +24,6 @@
     "release:mac": "node scripts/release-app.mjs --mac",
     "release:ext": "node scripts/release-extension.mjs",
     "build:server:linux": "node scripts/stage-server-linux.mjs",
-    "release:linux": "node scripts/release-app.mjs --linux --x64",
     "notices": "node scripts/third-party-notices.mjs"
   },
   "devDependencies": {

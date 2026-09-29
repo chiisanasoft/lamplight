@@ -127,5 +127,5 @@ node pack-extension.mjs my-extension --sign my-key.pem       # 独自の Ed25519
 ## 開発時の補足
 
 - `LAMPLIGHT_EXT_CONFIG` を設定すれば、Lamplight を介さず単体で起動できます（`node server.js`）。
-- インストール済みの拡張機能は、Lamplight のデータ保存先の `extensions/<id>` に配置されます（macOS: `~/Library/Application Support/Lamplight/extensions`、Linux: `~/.config/Lamplight/extensions`）。更新する場合は、`version` を上げたパッケージを再度追加します。
+- インストール済みの拡張機能は、Lamplight のデータ保存先の `extensions/<id>` に配置されます（`~/Library/Application Support/Lamplight/extensions`）。更新する場合は、`version` を上げたパッケージを再度追加します。
 - 参考実装: 本リポジトリの `extensions/ocr`（PDF の画像化、OCR、Mistral OCR 互換 API、Excel 出力）

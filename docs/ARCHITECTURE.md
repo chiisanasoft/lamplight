@@ -259,7 +259,7 @@ flowchart LR
 | --- | --- | --- |
 | 1 | `npm run build:server` | 固定バージョンの LibreChat を取得し、パッチを適用してビルドし、`resources/server` に配置する |
 | 2 | `npm run dist:mac` | Lamplight をビルドし、afterPack フックでサーバーをアプリケーションにコピーして `.dmg` と自動アップデート用の `.zip` を作成する |
-| Linux | `npm run build:server:linux -- x64` → `npm run dist:linux` | `resources/server` を基に、Linux コンテナ（Docker）で本番用依存を再インストールした `resources/server-linux-x64` を作成し、AppImage と `.deb` を作成する |
+| Linux（開発・検証用。配布は行わない） | `npm run build:server:linux -- x64` → `npm run dist:linux` | `resources/server` を基に、Linux コンテナ（Docker）で本番用依存を再インストールした `resources/server-linux-x64` を作成し、AppImage と `.deb` を作成する |
 
 electron-builder の `extraResources` は `node_modules` を常に除外するため、サーバーのコピーには afterPack フック（`scripts/after-pack.cjs`）を使用します。ビルド対象の OS・CPU がビルド環境と異なる場合、フックは `resources/server-<OS>-<CPU>` を使用します（sharp など、OS ごとに異なるネイティブモジュールがあるため）。
 
@@ -274,7 +274,7 @@ electron-builder の `extraResources` は `node_modules` を常に除外する�
 
 ## データ保存先
 
-macOS: `~/Library/Application Support/Lamplight/`、Linux: `~/.config/Lamplight/`
+`~/Library/Application Support/Lamplight/`
 
 | パス | 内容 |
 | --- | --- |

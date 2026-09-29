@@ -27,15 +27,8 @@ LibreChat のサーバーをアプリケーションに内蔵し、アプリケ�
 | OS | 対応状況 | 配布形式 |
 | --- | --- | --- |
 | macOS（Apple シリコン） | 対応（内蔵サーバー・外部サーバー） | `.dmg` |
-| Linux（x64） | 対応（内蔵サーバー・外部サーバー）。OCR 拡張機能は未対応 | AppImage / `.deb` |
+| Linux | 未対応 | — |
 | Windows | 未対応 | — |
-
-Linux における注意事項:
-
-- Wayland 環境では、グローバルショートカットに XDG GlobalShortcuts ポータルを使用します。初回にデスクトップ環境の許可ダイアログが表示されます。ポータル非対応の環境では、システム設定のキーボードショートカットに Lamplight を登録してください。
-- GNOME でトレイアイコンを表示するには、AppIndicator 拡張機能が必要です。
-- 内蔵サーバーの MongoDB は、ディストリビューションに対応した公式ビルドを取得します（Ubuntu 20.04 以降とその派生、Debian 12 以降、RHEL・Rocky・Alma 8 / 9、Fedora、Amazon Linux 2023）。その他の環境では外部サーバーモードを使用してください。
-- 秘密情報の暗号化には、デスクトップのキーリング（GNOME Keyring・KWallet）を使用します。
 
 ## 内蔵サーバー構成
 
@@ -46,7 +39,7 @@ Linux における注意事項:
 | アカウント | 初回起動時にローカル用アカウントを作成し、以降は起動時に自動でサインインする。新規登録は無効 |
 | 秘密情報 | 暗号鍵などを OS のキーチェーン（`safeStorage`）で暗号化して保存する。キーチェーンの項目が失われた場合は、利用者の確認を経て鍵を再生成し、ローカル用アカウントを復旧する（会話は保持、保存済みの API キーは再入力が必要） |
 | アップデート | GitHub Releases から更新を自動で確認・取得する（設定で無効化可能） |
-| データ保存先 | macOS: `~/Library/Application Support/Lamplight/`、Linux: `~/.config/Lamplight/`（MongoDB のデータ、アップロード、画像、ログ、設定） |
+| データ保存先 | `~/Library/Application Support/Lamplight/`（MongoDB のデータ、アップロード、画像、ログ、設定） |
 | サーバー設定 | LibreChat の既定値（`.env.example`）を基に構成する。OpenAI・Anthropic・Google は、チャット画面のモデル選択にある歯車アイコンから API キーを入力して使用する |
 | サーバー設定の変更 | データフォルダの `server.env`（LibreChat の `.env` に相当）と `librechat.yaml` で、API キーやエンドポイントを追加できる（設定画面から開く。再起動後に反映）。アドレス・データベース・暗号鍵など、内蔵サーバーの動作に必要な項目は Lamplight が管理する |
 | ローカル LLM | 別途インストールした Ollama（`127.0.0.1:11434`）を使用する |
@@ -98,8 +91,8 @@ npm start                          # ビルドして起動
 npm test                           # 単体テスト
 npm run typecheck                  # 型チェック
 npm run dist:mac                   # release/ に .dmg と .zip を作成（署名なし: CSC_IDENTITY_AUTO_DISCOVERY=false）
-npm run build:server:linux -- x64  # Linux 用の内蔵サーバー（Docker が必要）
-npm run dist:linux                 # release/ に AppImage と .deb を作成
+npm run build:server:linux -- x64  # Linux 用の内蔵サーバー（開発・検証用。Docker が必要）
+npm run dist:linux                 # release/ に AppImage と .deb を作成（開発・検証用。配布は行わない）
 ```
 
 リリース、コード署名、公証の手順は [docs/RELEASE.md](docs/RELEASE.md) を参照してください。
